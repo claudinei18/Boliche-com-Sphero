@@ -6,12 +6,10 @@
     android:layout_height="match_parent">
 
     <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/pink_icon"
+        android:id="@+id/btn_movim"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        fab:fab_icon="@drawable/ic_fab_star"
-        fab:fab_colorNormal="@color/pink"
-        fab:fab_colorPressed="@color/pink_pressed"
+        fab:fab_icon="@drawable/bowling_ball"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="16dp"/>
@@ -35,12 +33,21 @@
         android:layout_marginEnd="16dp">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/bt_sleep"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/sphero_sleep"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_title="Press to put Sphero to sleep!"
+            fab:fab_colorPressed="@color/white_pressed"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/bt_disconnect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             fab:fab_icon="@drawable/disconnect"
             fab:fab_colorNormal="@color/white"
-            fab:fab_title="Press to disconnect from Sphero"
+            fab:fab_title="Press to disconnect from Sphero!"
             fab:fab_colorPressed="@color/white_pressed"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -49,9 +56,45 @@
             android:layout_height="wrap_content"
             fab:fab_icon="@drawable/connect"
             fab:fab_colorNormal="@color/white"
-            fab:fab_title="Press to connect to Sphero"
+            fab:fab_title="Press to connect to Sphero!"
             fab:fab_colorPressed="@color/white_pressed"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/select_hand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        fab:fab_addButtonColorNormal="@color/white"
+        fab:fab_addButtonColorPressed="@color/white_pressed"
+        fab:fab_addButtonSize="mini"
+        fab:fab_addButtonPlusIconColor="@color/half_black"
+        fab:fab_expandDirection="down"
+        fab:fab_labelStyle="@style/menu_labels_style"
+        android:layout_marginTop="300dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/bt_left_hand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/hand"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_title="Press to Left Hand"
+            fab:fab_colorPressed="@color/white_pressed"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/bt_right_hand"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_icon="@drawable/hand"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_title="Press to Right Hand"
+            fab:fab_colorPressed="@color/white_pressed"/>
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 </RelativeLayout>
