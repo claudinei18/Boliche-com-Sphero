@@ -104,6 +104,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/multiple_actions_down"
         android:layout_alignParentStart="true"
+        android:textSize="20dp"
         android:id="@+id/textView8" />
 
     <TextView
@@ -111,16 +112,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/tvBateria"
+        android:textSize="20dp"
         android:layout_alignTop="@+id/multiple_actions_down"
         android:layout_toEndOf="@+id/textView8" />
 
     <TextView
-        android:text="Conecte primeiro ..."
+        android:text="Conecte primeiro..."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:id="@+id/tvDirecao"
+        android:textSize="50dp"
         android:layout_below="@+id/textView8"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="12dp"
-        android:id="@+id/tvDirecao" />
+        android:layout_alignEnd="@+id/btn_movim" />
 
 </RelativeLayout>

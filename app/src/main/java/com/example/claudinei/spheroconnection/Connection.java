@@ -272,7 +272,7 @@ public class Connection extends Activity implements RobotChangedStateListener, S
                     //Para e executa o proximo movimento da lista recursivamente.
                     mRobot.stop();
                 }
-            }, 200);
+            }, 5000);
 
         }
     }
@@ -300,13 +300,14 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             x = xx;
             y = yy;
             z = zz;
-        }else if( bottomPressed && yy < 0){
-            if(zz > z){
-                locomover(0.0f, VELOCIDADE_SPHERO);
-                TextView tv = (TextView) findViewById(R.id.tvDirecao);
-                tv.setText("Frete");
-            }else{
+        }
+        if(bottomPressed) {
+            if (y < 0 && yy > 0 ){
                 locomover(180.0f, VELOCIDADE_SPHERO);
+                TextView tv = (TextView) findViewById(R.id.tvDirecao);
+                tv.setText("Frente");
+            } else if (yy < 0 && zz < 3 && zz < z) {
+                locomover(0.0f, VELOCIDADE_SPHERO);
                 TextView tv = (TextView) findViewById(R.id.tvDirecao);
                 tv.setText("Trás");
             }
@@ -315,6 +316,7 @@ public class Connection extends Activity implements RobotChangedStateListener, S
         x = xx;
         y = yy;
         z = zz;
+
 
 
     }
@@ -327,6 +329,9 @@ public class Connection extends Activity implements RobotChangedStateListener, S
         float batteryShow = bateria*100;
         String show = batteryShow + " %";
         tv.setText(show);
+
+
+
     }
 
     @Override
