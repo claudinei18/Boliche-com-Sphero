@@ -97,4 +97,30 @@
             fab:fab_colorPressed="@color/white_pressed"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+    <TextView
+        android:text="Nível de Bateria do Sphero:"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/multiple_actions_down"
+        android:layout_alignParentStart="true"
+        android:id="@+id/textView8" />
+
+    <TextView
+        android:text="0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvBateria"
+        android:layout_alignTop="@+id/multiple_actions_down"
+        android:layout_toEndOf="@+id/textView8" />
+
+    <TextView
+        android:text="Conecte primeiro ..."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView8"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="12dp"
+        android:id="@+id/tvDirecao" />
+
 </RelativeLayout>

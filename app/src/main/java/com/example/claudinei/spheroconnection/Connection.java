@@ -2,14 +2,21 @@ package com.example.claudinei.spheroconnection;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -24,22 +31,37 @@ import com.orbotix.le.DiscoveryAgentLE;
 import com.orbotix.le.RobotLE;
 import com.orbotix.common.RobotChangedStateListener;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by claudinei on 03/09/16.
  */
-public class Connection extends Activity implements RobotChangedStateListener{
+public class Connection extends Activity implements RobotChangedStateListener, SensorEventListener {
 
     private static final int REQUEST_CODE_LOCATION_PERMISSION = 42;
     private ConvenienceRobot mRobot;
 
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+
+    private float bateria;
+    private static float VELOCIDADE_SPHERO = 0.3f;
+    private boolean bottomPressed = false;
+
+    Float x = new Float(0);
+    Float y = new Float(0);
+    Float z = new Float(0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.floating_button);
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ) {
             int hasLocationPermission = checkSelfPermission( Manifest.permission.ACCESS_COARSE_LOCATION );
@@ -85,6 +107,20 @@ public class Connection extends Activity implements RobotChangedStateListener{
                 }
 
 
+            }
+        });
+
+        findViewById(R.id.btn_movim).setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    bottomPressed = true;
+                }
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    bottomPressed = false;
+                }
+                return true;
             }
         });
 
@@ -220,6 +256,89 @@ public class Connection extends Activity implements RobotChangedStateListener{
                 break;
             }
         }
+    }
+
+    private void locomover(final float direcao, final float velocidade) {
+        if (mRobot != null) {
+            // Sphero ira para a direcao requerida na velocidade que for passada como parametro
+            mRobot.drive(direcao, velocidade);
+
+            // ira se locomover na direcao por 1 segundo
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    //Para e executa o proximo movimento da lista recursivamente.
+                    mRobot.stop();
+                }
+            }, 200);
+
+        }
+    }
+
+    //    Esse metodo manipula o sensor de acelerometro do celular
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        Float xx = event.values[0];
+        Float yy = event.values[1];
+        Float zz = event.values[2];
+
+         /*
+        Os valores ocilam de -10 a 10.
+        Quanto maior o valor de X mais ele ta caindo para a esquerda - Positivo Esqueda
+        Quanto menor o valor de X mais ele ta caindo para a direita  - Negativo Direita
+        Se o valor de  X for 0 então o celular ta em pé - Nem Direita Nem Esquerda
+        Se o valor de Y for 0 então o cel ta "deitado"
+         Se o valor de Y for negativo então ta de cabeça pra baixo, então quanto menor y mais ele ta inclinando pra ir pra baixo
+        Se o valor de Z for 0 então o dispositivo esta reto na horizontal.
+        Quanto maior o o valor de Z Mais ele esta inclinado para frente
+        Quanto menor o valor de Z Mais ele esta inclinado para traz.
+        */
+
+        if(z == 0){
+            x = xx;
+            y = yy;
+            z = zz;
+        }else if( bottomPressed && yy < 0){
+            if(zz > z){
+                locomover(0.0f, VELOCIDADE_SPHERO);
+                TextView tv = (TextView) findViewById(R.id.tvDirecao);
+                tv.setText("Frete");
+            }else{
+                locomover(180.0f, VELOCIDADE_SPHERO);
+                TextView tv = (TextView) findViewById(R.id.tvDirecao);
+                tv.setText("Trás");
+            }
+        }
+
+        x = xx;
+        y = yy;
+        z = zz;
+
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        //Retorna a bateria disponivel do Sphero
+        bateria = sensor.getPower();
+        TextView tv = (TextView) findViewById(R.id.tvBateria);
+        float batteryShow = bateria*100;
+        String show = batteryShow + " %";
+        tv.setText(show);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSensorManager.unregisterListener(this);
     }
 
 }
