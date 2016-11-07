@@ -53,6 +53,8 @@ public class Connection extends Activity implements RobotChangedStateListener, S
     private static float VELOCIDADE_SPHERO = 0.3f;
     private boolean bottomPressed = false;
 
+    float direction = 90.0f;
+
     Float x = new Float(0);
     Float y = new Float(0);
     Float z = new Float(0);
@@ -131,6 +133,7 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             public void onClick(View v) {
                 if(mRobot != null){
                     mRobot.rotate(0.0f);
+                    direction = 0.0f;
                     Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -141,6 +144,7 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             public void onClick(View v) {
                 if(mRobot != null){
                     mRobot.rotate(180.0f);
+                    direction = 180.0f;
                     Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -150,7 +154,8 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             @Override
             public void onClick(View v) {
                 if(mRobot != null){
-                    mRobot.rotate(180.0f);
+                    mRobot.rotate(270.0f);
+                    direction = 270.0f;
                     Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -161,6 +166,7 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             public void onClick(View v) {
                 if(mRobot != null){
                     mRobot.rotate(90.0f);
+                    direction = 90.0f;
                     Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -348,11 +354,12 @@ public class Connection extends Activity implements RobotChangedStateListener, S
         }
         if(bottomPressed) {
             if (y < 0 && yy > 0 ){
-                locomover(180.0f, VELOCIDADE_SPHERO);
+                locomover(direction, VELOCIDADE_SPHERO);
                 TextView tv = (TextView) findViewById(R.id.tvDirecao);
                 tv.setText("Frente");
             } else if (yy < 0 && zz < 3 && zz < z) {
-                locomover(0.0f, VELOCIDADE_SPHERO);
+                float currentDirection = Math.abs(direction - 180.0f);
+                locomover(currentDirection, VELOCIDADE_SPHERO);
                 TextView tv = (TextView) findViewById(R.id.tvDirecao);
                 tv.setText("Trás");
             }
