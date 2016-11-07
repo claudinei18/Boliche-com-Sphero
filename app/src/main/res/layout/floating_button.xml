@@ -122,9 +122,41 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
         android:id="@+id/tvDirecao"
-        android:textSize="50dp"
+        android:textSize="20dp"
         android:layout_below="@+id/textView8"
         android:layout_alignParentStart="true"
         android:layout_alignEnd="@+id/btn_movim" />
+
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        fab:fab_icon="@drawable/right"
+        android:layout_above="@+id/btn_down"
+        android:layout_toEndOf="@+id/btn_up" />
+
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        fab:fab_icon="@drawable/up"
+        android:layout_above="@+id/btn_right"
+        android:layout_toStartOf="@+id/btn_movim" />
+
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        fab:fab_icon="@drawable/down"
+        android:layout_below="@+id/btn_left"
+        android:layout_toStartOf="@+id/btn_right" />
+
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        fab:fab_icon="@drawable/left"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

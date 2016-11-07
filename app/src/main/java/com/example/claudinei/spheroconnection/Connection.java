@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.orbotix.ConvenienceRobot;
 import com.orbotix.DualStackDiscoveryAgent;
+import com.orbotix.command.RotationRateCommand;
 import com.orbotix.common.DiscoveryException;
 import com.orbotix.common.Robot;
 import com.orbotix.le.DiscoveryAgentLE;
@@ -35,6 +36,7 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by claudinei on 03/09/16.
@@ -124,6 +126,47 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             }
         });
 
+        findViewById(R.id.btn_up).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mRobot != null){
+                    mRobot.rotate(0.0f);
+                    Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        findViewById(R.id.btn_down).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mRobot != null){
+                    mRobot.rotate(180.0f);
+                    Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        findViewById(R.id.btn_left).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mRobot != null){
+                    mRobot.rotate(180.0f);
+                    Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        findViewById(R.id.btn_right).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mRobot != null){
+                    mRobot.rotate(90.0f);
+                    Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
         findViewById(R.id.btn_movim).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,6 +189,8 @@ public class Connection extends Activity implements RobotChangedStateListener, S
                 Toast.makeText(getApplicationContext(), "Right hand selected!", Toast.LENGTH_SHORT).show();
             }
         });
+
+
 
     }
 
