@@ -25,9 +25,13 @@ import android.widget.Toast;
 
 import com.orbotix.ConvenienceRobot;
 import com.orbotix.DualStackDiscoveryAgent;
+import com.orbotix.async.CollisionDetectedAsyncData;
 import com.orbotix.command.RotationRateCommand;
 import com.orbotix.common.DiscoveryException;
+import com.orbotix.common.ResponseListener;
 import com.orbotix.common.Robot;
+import com.orbotix.common.internal.AsyncMessage;
+import com.orbotix.common.internal.DeviceResponse;
 import com.orbotix.le.DiscoveryAgentLE;
 import com.orbotix.le.RobotLE;
 import com.orbotix.common.RobotChangedStateListener;
@@ -120,6 +124,7 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
                     bottomPressed = true;
+                    Toast.makeText(getApplicationContext(), "Pronto para o Strike ?! Faça o movimento então . . .", Toast.LENGTH_SHORT).show();
                 }
                 if(event.getAction() == MotionEvent.ACTION_UP){
                     bottomPressed = false;
@@ -171,33 +176,6 @@ public class Connection extends Activity implements RobotChangedStateListener, S
                 }
             }
         });
-
-
-        findViewById(R.id.btn_movim).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Toast.makeText(getApplicationContext(), "Pronto para o Strike ?! Faça o movimento então . . .", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-        findViewById(R.id.bt_left_hand).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Left hand selected!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        findViewById(R.id.bt_right_hand).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Right hand selected!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-
     }
 
 
@@ -290,6 +268,36 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             case Online: {
                 //Save the robot as a ConvenienceRobot for additional utility methods
                 mRobot = new ConvenienceRobot(robot);
+
+                mRobot.enableCollisions( true );
+                mRobot.addResponseListener(new ResponseListener() {
+                    @Override
+                    public void handleResponse(DeviceResponse deviceResponse, Robot robot) {
+
+                    }
+
+                    @Override
+                    public void handleStringResponse(String s, Robot robot) {
+
+                    }
+
+                    @Override
+                    public void handleAsyncMessage(AsyncMessage asyncMessage, Robot robot) {
+                        if( asyncMessage instanceof CollisionDetectedAsyncData) {
+
+                            mRobot.setLed(255,0,0);
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    //Para e executa o proximo movimento da lista recursivamente.
+                                    mRobot.setLed(0,255,0);
+                                }
+                            }, 5000);
+                        }
+                    }
+                });
 
                 LayoutInflater inflater = getLayoutInflater();
                 View layout = inflater.inflate(R.layout.custom_toast,
