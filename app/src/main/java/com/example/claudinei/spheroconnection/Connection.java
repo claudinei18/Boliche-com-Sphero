@@ -63,6 +63,14 @@ public class Connection extends Activity implements RobotChangedStateListener, S
     Float y = new Float(0);
     Float z = new Float(0);
 
+    // Gravity force on x, y, z axis
+    private float gravity[] = new float[3];
+
+    private static final int THRESHOLD = 7;
+    private static final float ALPHA = 0.8f;
+
+    private float orientation = 90.0f;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,16 +79,16 @@ public class Connection extends Activity implements RobotChangedStateListener, S
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ) {
-            int hasLocationPermission = checkSelfPermission( Manifest.permission.ACCESS_COARSE_LOCATION );
-            if( hasLocationPermission != PackageManager.PERMISSION_GRANTED ) {
-                Log.e( "Sphero", "Location permission has not already been granted" );
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int hasLocationPermission = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+            if (hasLocationPermission != PackageManager.PERMISSION_GRANTED) {
+                Log.e("Sphero", "Location permission has not already been granted");
                 Toast.makeText(Connection.this, "Sphero - Location permission has not already been granted", Toast.LENGTH_SHORT).show();
                 List<String> permissions = new ArrayList<String>();
-                permissions.add( Manifest.permission.ACCESS_COARSE_LOCATION);
-                requestPermissions(permissions.toArray(new String[permissions.size()] ), REQUEST_CODE_LOCATION_PERMISSION );
+                permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+                requestPermissions(permissions.toArray(new String[permissions.size()]), REQUEST_CODE_LOCATION_PERMISSION);
             } else {
-                Log.d( "Sphero", "Location permission already granted" );
+                Log.d("Sphero", "Location permission already granted");
             }
         }
 
@@ -89,7 +97,7 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             public void onClick(View v) {
                 Toast.makeText(Connection.this, "Connecting . . . ", Toast.LENGTH_SHORT).show();
 
-                DualStackDiscoveryAgent.getInstance().addRobotStateListener( Connection.this );
+                DualStackDiscoveryAgent.getInstance().addRobotStateListener(Connection.this);
                 startDiscovery();
             }
         });
@@ -107,10 +115,10 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             @Override
             public void onClick(View v) {
 
-                if(mRobot != null){
+                if (mRobot != null) {
                     mRobot.sleep();
                     Toast.makeText(getApplicationContext(), "Sleeping . . . ", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     Toast.makeText(getApplicationContext(), "Connect to a Sphero first!", Toast.LENGTH_SHORT).show();
                 }
 
@@ -122,23 +130,32 @@ public class Connection extends Activity implements RobotChangedStateListener, S
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     bottomPressed = true;
                     Toast.makeText(getApplicationContext(), "Pronto para o Strike ?! Faça o movimento então . . .", Toast.LENGTH_SHORT).show();
                 }
-                if(event.getAction() == MotionEvent.ACTION_UP){
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     bottomPressed = false;
                 }
                 return true;
             }
         });
 
+        findViewById(R.id.btn_Calibrate).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mRobot != null) {
+                    direction = direction + 10.0f;
+                    mRobot.rotate(direction);
+                }
+            }
+        });
+
         findViewById(R.id.btn_up).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mRobot != null){
-                    mRobot.rotate(0.0f);
-                    direction = 0.0f;
+                if (mRobot != null) {
+                    mRobot.rotate(direction);
                     Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -147,9 +164,9 @@ public class Connection extends Activity implements RobotChangedStateListener, S
         findViewById(R.id.btn_down).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mRobot != null){
-                    mRobot.rotate(180.0f);
-                    direction = 180.0f;
+                if (mRobot != null) {
+                    direction = Math.abs(direction - 180.0f);
+                    mRobot.rotate(direction);
                     Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -158,9 +175,9 @@ public class Connection extends Activity implements RobotChangedStateListener, S
         findViewById(R.id.btn_left).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mRobot != null){
-                    mRobot.rotate(270.0f);
-                    direction = 270.0f;
+                if (mRobot != null) {
+                    direction = Math.abs(direction - 270.0f);
+                    mRobot.rotate(direction);
                     Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -169,9 +186,9 @@ public class Connection extends Activity implements RobotChangedStateListener, S
         findViewById(R.id.btn_right).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mRobot != null){
-                    mRobot.rotate(90.0f);
-                    direction = 90.0f;
+                if (mRobot != null) {
+                    direction = Math.abs(direction - 90.0f);
+                    mRobot.rotate(direction);
                     Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -179,16 +196,15 @@ public class Connection extends Activity implements RobotChangedStateListener, S
     }
 
 
-
     @Override
     protected void onStop() {
         //If the DiscoveryAgent is in discovery mode, stop it.
-        if( DualStackDiscoveryAgent.getInstance().isDiscovering() ) {
+        if (DualStackDiscoveryAgent.getInstance().isDiscovering()) {
             DualStackDiscoveryAgent.getInstance().stopDiscovery();
         }
 
         //If a robot is connected to the device, disconnect it
-        if( mRobot != null ) {
+        if (mRobot != null) {
             mRobot.disconnect();
             mRobot = null;
 
@@ -213,17 +229,17 @@ public class Connection extends Activity implements RobotChangedStateListener, S
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DualStackDiscoveryAgent.getInstance().addRobotStateListener( null );
+        DualStackDiscoveryAgent.getInstance().addRobotStateListener(null);
     }
 
     private void stopDiscovery() {
         //If the DiscoveryAgent is in discovery mode, stop it.
-        if( DualStackDiscoveryAgent.getInstance().isDiscovering() ) {
+        if (DualStackDiscoveryAgent.getInstance().isDiscovering()) {
             DualStackDiscoveryAgent.getInstance().stopDiscovery();
         }
 
         //If a robot is connected to the device, disconnect it
-        if( mRobot != null ) {
+        if (mRobot != null) {
             mRobot.disconnect();
             mRobot = null;
         }
@@ -231,9 +247,9 @@ public class Connection extends Activity implements RobotChangedStateListener, S
 
     private void startDiscovery() {
         //If the DiscoveryAgent is not already looking for robots, start discovery.
-        if( !DualStackDiscoveryAgent.getInstance().isDiscovering() ) {
+        if (!DualStackDiscoveryAgent.getInstance().isDiscovering()) {
             try {
-                DualStackDiscoveryAgent.getInstance().startDiscovery( this );
+                DualStackDiscoveryAgent.getInstance().startDiscovery(this);
             } catch (DiscoveryException e) {
                 Log.e("Sphero", "DiscoveryException: " + e.getMessage());
                 Toast.makeText(Connection.this, "Sphero - DiscoveryException: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -243,14 +259,14 @@ public class Connection extends Activity implements RobotChangedStateListener, S
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch ( requestCode ) {
+        switch (requestCode) {
             case REQUEST_CODE_LOCATION_PERMISSION: {
-                for( int i = 0; i < permissions.length; i++ ) {
-                    if( grantResults[i] == PackageManager.PERMISSION_GRANTED ) {
+                for (int i = 0; i < permissions.length; i++) {
+                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                         startDiscovery();
-                        Log.d( "Permissions", "Permission Granted: " + permissions[i] );
-                    } else if( grantResults[i] == PackageManager.PERMISSION_DENIED ) {
-                        Log.d( "Permissions", "Permission Denied: " + permissions[i] );
+                        Log.d("Permissions", "Permission Granted: " + permissions[i]);
+                    } else if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
+                        Log.d("Permissions", "Permission Denied: " + permissions[i]);
                     }
                 }
             }
@@ -268,8 +284,10 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             case Online: {
                 //Save the robot as a ConvenienceRobot for additional utility methods
                 mRobot = new ConvenienceRobot(robot);
+                direction = mRobot.getLastHeading();
+                mRobot.setBackLedBrightness(1.0f);
 
-                mRobot.enableCollisions( true );
+                mRobot.enableCollisions(true);
                 mRobot.addResponseListener(new ResponseListener() {
                     @Override
                     public void handleResponse(DeviceResponse deviceResponse, Robot robot) {
@@ -283,18 +301,26 @@ public class Connection extends Activity implements RobotChangedStateListener, S
 
                     @Override
                     public void handleAsyncMessage(AsyncMessage asyncMessage, Robot robot) {
-                        if( asyncMessage instanceof CollisionDetectedAsyncData) {
+                        if (asyncMessage instanceof CollisionDetectedAsyncData) {
+                            for (int i = 0; i < 10; i++) {
+                                mRobot.setLed(255, 0, 0);
+                                final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
 
-                            mRobot.setLed(255,0,0);
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mRobot.setLed(0, 0, 255);
+                                    }
+                                }, 200);
 
-                                @Override
-                                public void run() {
-                                    //Para e executa o proximo movimento da lista recursivamente.
-                                    mRobot.setLed(0,255,0);
-                                }
-                            }, 5000);
+                                handler.postDelayed(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        mRobot.setLed(0, 255, 0);
+                                    }
+                                }, 200);
+                            }
                         }
                     }
                 });
@@ -355,13 +381,16 @@ public class Connection extends Activity implements RobotChangedStateListener, S
         Quanto menor o valor de Z Mais ele esta inclinado para traz.
         */
 
-        if(z == 0){
+        if (z == 0) {
             x = xx;
             y = yy;
             z = zz;
         }
-        if(bottomPressed) {
-            if (y < 0 && yy > 0 ){
+        if (bottomPressed) {
+            if (y < 0 && yy > 0) {
+                float acceleration = maxAcceleration(event);
+                Sensor mySensor = event.sensor;
+
                 locomover(direction, VELOCIDADE_SPHERO);
                 TextView tv = (TextView) findViewById(R.id.tvDirecao);
                 tv.setText("Frente");
@@ -378,7 +407,27 @@ public class Connection extends Activity implements RobotChangedStateListener, S
         z = zz;
 
 
+    }
 
+    private float maxAcceleration(SensorEvent event) {
+        // Low-pass filter
+        gravity[0] = ALPHA * gravity[0] + (1 - ALPHA) * event.values[0]; // x axis
+        gravity[1] = ALPHA * gravity[1] + (1 - ALPHA) * event.values[1]; // y axis
+        gravity[2] = ALPHA * gravity[2] + (1 - ALPHA) * event.values[2]; // z axis
+
+        // High-pass filter
+        float linear_acceleration[] = new float[3];
+        linear_acceleration[0] = event.values[0] - gravity[0];
+        linear_acceleration[1] = event.values[1] - gravity[1];
+        linear_acceleration[2] = event.values[2] - gravity[2];
+        float max = Math.max(Math.max(linear_acceleration[0], linear_acceleration[1])
+                , linear_acceleration[2]);
+
+        if (max == linear_acceleration[1]) {
+            return linear_acceleration[1];
+        } else {
+            return 0.0f;
+        }
     }
 
     @Override
@@ -386,12 +435,9 @@ public class Connection extends Activity implements RobotChangedStateListener, S
         //Retorna a bateria disponivel do Sphero
         bateria = sensor.getPower();
         TextView tv = (TextView) findViewById(R.id.tvBateria);
-        float batteryShow = bateria*100;
+        float batteryShow = bateria * 100;
         String show = batteryShow + " %";
         tv.setText(show);
-
-
-
     }
 
     @Override
