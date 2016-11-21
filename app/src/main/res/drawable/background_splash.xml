@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:drawable="@drawable/background"/>
+
+    <item
+        android:gravity="center"
+        android:width="100dp"
+        android:height="100dp"
+        android:drawable="@drawable/bowling_icon">
+        <!--<bitmap-->
+            <!--android:gravity="center"-->
+            <!--android:mipMap="true"-->
+            <!--android:src="@drawable/bowling_icon"/>-->
+    </item>
+
+</layer-list>

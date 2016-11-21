@@ -22,6 +22,7 @@ public class FloatingButton extends Activity {
 
         Intent intent = new Intent(FloatingButton.this, Connection.class);
         startActivity(intent);
+        finish();
     }
 
 }
