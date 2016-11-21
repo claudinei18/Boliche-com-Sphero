@@ -54,10 +54,12 @@ public class Connection extends Activity implements RobotChangedStateListener, S
     private Sensor mAccelerometer;
 
     private float bateria;
-    private static float VELOCIDADE_SPHERO = 0.3f;
+    private static float VELOCIDADE_SPHERO = 0.9f;
     private boolean bottomPressed = false;
 
     float direction = 90.0f;
+
+    private String sentido = "up";
 
     Float x = new Float(0);
     Float y = new Float(0);
@@ -156,7 +158,7 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             public void onClick(View v) {
                 if (mRobot != null) {
                     mRobot.rotate(direction);
-                    Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Frente", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -165,9 +167,12 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             @Override
             public void onClick(View v) {
                 if (mRobot != null) {
-                    direction = Math.abs(direction - 180.0f);
-                    mRobot.rotate(direction);
-                    Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
+                    if(sentido != "down"){
+                        direction = Math.abs(direction + 180.0f);
+                        mRobot.rotate(direction);
+                        Toast.makeText(getApplicationContext(), "Trás", Toast.LENGTH_SHORT).show();
+                        sentido = "down";
+                    }
                 }
             }
         });
@@ -176,9 +181,12 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             @Override
             public void onClick(View v) {
                 if (mRobot != null) {
-                    direction = Math.abs(direction - 270.0f);
-                    mRobot.rotate(direction);
-                    Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
+                    if(sentido != "left"){
+                        direction = Math.abs(direction + 270.0f);
+                        mRobot.rotate(direction);
+                        Toast.makeText(getApplicationContext(), "Esquerda", Toast.LENGTH_SHORT).show();
+                        sentido = "left";
+                    }
                 }
             }
         });
@@ -187,9 +195,12 @@ public class Connection extends Activity implements RobotChangedStateListener, S
             @Override
             public void onClick(View v) {
                 if (mRobot != null) {
-                    direction = Math.abs(direction - 90.0f);
-                    mRobot.rotate(direction);
-                    Toast.makeText(getApplicationContext(), "Clicado", Toast.LENGTH_SHORT).show();
+                    if(sentido != "right"){
+                        direction = Math.abs(direction + 90.0f);
+                        mRobot.rotate(direction);
+                        Toast.makeText(getApplicationContext(), "Direita", Toast.LENGTH_SHORT).show();
+                        sentido = "right";
+                    }
                 }
             }
         });
